@@ -10,6 +10,15 @@ public struct EnumSubsetMacro: MemberMacro {
         providingMembersOf declaration: Declaration,
         in context: Context
     ) throws -> [SwiftSyntax.DeclSyntax] where Declaration : SwiftSyntax.DeclGroupSyntax, Context : SwiftSyntaxMacros.MacroExpansionContext {
+        guard let enumDecl = declaration.as(EnumDeclSyntax.self) else {
+            // TODO: [에러처리] Emit an error here
+            return []
+        }
+        let members = enumDecl.memberBlock.members
+        let caseDecls = members.compactMap { $0.decl.as(EnumCaseDeclSyntax.self) }
+        let elements = caseDecls.flatMap { $0.elements }
+        
+        
         return []
     }
     

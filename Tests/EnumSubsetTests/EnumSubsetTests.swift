@@ -4,31 +4,24 @@ import XCTest
 import EnumSubsetMacros
 
 let testMacros: [String: Macro.Type] = [
-    "stringify": StringifyMacro.self,
+    "EnumSubset": EnumSubsetMacro.self
 ]
 
 final class EnumSubsetTests: XCTestCase {
-    func testMacro() {
+    func testEnumSubset() {
         assertMacroExpansion(
             """
-            #stringify(a + b)
-            """,
-            expandedSource: """
-            (a + b, "a + b")
-            """,
-            macros: testMacros
-        )
-    }
-
-    func testMacroWithStringLiteral() {
-        assertMacroExpansion(
-            #"""
-            #stringify("Hello, \(name)")
-            """#,
-            expandedSource: #"""
-            ("Hello, \(name)", #""Hello, \(name)""#)
-            """#,
-            macros: testMacros
-        )
+            @EnumSubset
+            enum 한식 {
+              case 떡국, 불고기
+            }
+            """
+            , expandedSource:
+            """
+            enum 한식 {
+              case 떡국, 불고기
+            }
+            """
+                , macros: testMacros)
     }
 }

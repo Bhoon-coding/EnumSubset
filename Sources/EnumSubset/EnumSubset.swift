@@ -5,4 +5,4 @@
 /// source code that generated the value. For example,
 
 @attached(member, names: named(init))
-public macro EnumSubset() = #externalMacro(module: "EnumSubsetMacros", type: "EnumSubsetMacro")
+public macro EnumSubset<Superset>() = #externalMacro(module: "EnumSubsetMacros", type: "EnumSubsetMacro")
