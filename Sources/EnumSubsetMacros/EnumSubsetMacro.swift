@@ -11,6 +11,7 @@ public struct EnumSubsetMacro: MemberMacro {
         in context: Context
     ) throws -> [SwiftSyntax.DeclSyntax] where Declaration : SwiftSyntax.DeclGroupSyntax, Context : SwiftSyntaxMacros.MacroExpansionContext {
         guard let enumDecl = declaration.as(EnumDeclSyntax.self) else {
+            
             // TODO: [에러처리] Emit an error here
             return []
         }
@@ -18,8 +19,21 @@ public struct EnumSubsetMacro: MemberMacro {
         let caseDecls = members.compactMap { $0.decl.as(EnumCaseDeclSyntax.self) }
         let elements = caseDecls.flatMap { $0.elements }
         
+        let initializer = try InitializerDeclSyntax("init?(_ slope: Slope)") {
+            try SwitchExprSyntax("switch slope") {
+                for element in elements {
+                    SwitchCaseSyntax(
+                        """
+                        case .\(element.identifier):
+                            self = .\(element.identifier)
+                        """
+                    )
+                }
+                SwitchCaseSyntax("default: return nil")
+            }
+        }
         
-        return []
+        return [DeclSyntax(initializer)]
     }
     
 }
