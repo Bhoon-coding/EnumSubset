@@ -3,6 +3,17 @@ import SwiftSyntax
 import SwiftSyntaxBuilder
 import SwiftSyntaxMacros
 
+enum EnumSubsetError: CustomStringConvertible, Error {
+    case onlyApplicableToEnum
+    
+    var description: String {
+        switch self {
+        case .onlyApplicableToEnum:
+            return "@EnumSubset can only be applied to an enum"
+        }
+    }
+}
+
 /// Implementation of th `EnumSubset` macro
 public struct EnumSubsetMacro: MemberMacro {
     public static func expansion<Declaration, Context>(
@@ -11,9 +22,7 @@ public struct EnumSubsetMacro: MemberMacro {
         in context: Context
     ) throws -> [SwiftSyntax.DeclSyntax] where Declaration : SwiftSyntax.DeclGroupSyntax, Context : SwiftSyntaxMacros.MacroExpansionContext {
         guard let enumDecl = declaration.as(EnumDeclSyntax.self) else {
-            
-            // TODO: [에러처리] Emit an error here
-            return []
+            throw EnumSubsetError.onlyApplicableToEnum
         }
         let members = enumDecl.memberBlock.members
         let caseDecls = members.compactMap { $0.decl.as(EnumCaseDeclSyntax.self) }
